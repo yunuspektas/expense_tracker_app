@@ -33,6 +33,9 @@ public class User {
 	@Column(unique = true)
 	private String phoneNumber;
 
+	@Column(unique = true)
+	private String email;
+
 	@OneToOne
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private UserRole userRole; // entity.concretes.user

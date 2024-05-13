@@ -21,7 +21,6 @@ public class UserService {
     private final UserRoleService userRoleService;
     private final UserMapper userMapper;
 
-    // Not : saveUser() *************************************************************
     public UserResponse saveUser(UserRequest userRequest) {
         // !!! is username - phoneNumber unique ???
         if (userRepository.existsByUsername(userRequest.getUsername()) ||
@@ -30,22 +29,17 @@ public class UserService {
                     ErrorMessages.USERNAME_PHONE_UNIQUE_MESSAGE));
         }
 
-        User user = User.builder()
-                .name(userRequest.getName())
-                .surname(userRequest.getSurname())
-                .phoneNumber(userRequest.getPhoneNumber())
-                .password(passwordEncoder.encode(userRequest.getPassword()))
-                .username(userRequest.getUsername())
-                .build();
+        User newUser = userMapper.mapUserRequestToUser(userRequest);
+        newUser.setPassword(passwordEncoder.encode(userRequest.getPassword()));
 
         if(userRequest.getUsername().equals("Admin")) {
-            user.setUserRole(userRoleService.getUserRole(RoleType.ADMIN));
-            user.setBuilt_in(Boolean.TRUE);
+            newUser.setUserRole(userRoleService.getUserRole(RoleType.ADMIN));
+            newUser.setBuilt_in(Boolean.TRUE);
         } else {
-            user.setUserRole(userRoleService.getUserRole(RoleType.CUSTOMER));
-            user.setBuilt_in(Boolean.FALSE);
+            newUser.setUserRole(userRoleService.getUserRole(RoleType.CUSTOMER));
+            newUser.setBuilt_in(Boolean.FALSE);
         }
-        return userMapper.mapUserToUserResponse( userRepository.save(user));
+        return userMapper.mapUserToUserResponse( userRepository.save(newUser));
     }
 
     public int countAdminOrCustomer(RoleType roleType) {

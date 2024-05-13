@@ -1,6 +1,8 @@
 package com.dbglobe.security.service;
 
 import com.dbglobe.domain.User;
+import com.dbglobe.exception.ResourceNotFoundException;
+import com.dbglobe.payload.messages.ErrorMessages;
 import com.dbglobe.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,7 +18,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		User user = userRepository.findByUsername(username);
+		User user = userRepository.findByUsername(username).orElseThrow(()->
+				new ResourceNotFoundException(String.format(ErrorMessages.USER_NOT_FOUND_WITH_USERNAME, username)));
 
 		if (user != null) {
 			return new UserDetailsImpl(

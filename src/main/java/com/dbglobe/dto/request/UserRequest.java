@@ -1,8 +1,7 @@
 package com.dbglobe.dto.request;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,6 +33,10 @@ public class UserRequest {
   /*  @Pattern(regexp = "^((\\(\\d{3}\\))|\\d{3})[- .]?\\d{3}[- .]?\\d{4}$",
             message = "Please enter valid phone number")*/
     private String phoneNumber;
+
+    @Email(message = "Please provide valid email")
+    @NotBlank(message = "Please enter your email")
+    private String email;
 
     private String password;
 }

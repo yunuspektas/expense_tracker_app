@@ -47,7 +47,6 @@ public class AuthenticationService {
 		//!!! bir kullanicinin birden fazla rolu olmayacagi icin ilk indexli elemani aliyoruz
 		Optional<String> role = roles.stream().findFirst();
 
-		// another way of using builder
 		AuthResponse.AuthResponseBuilder authResponse = AuthResponse.builder();
 		authResponse.username(userDetails.getUsername());
 		authResponse.token(token.substring(7));
@@ -55,7 +54,6 @@ public class AuthenticationService {
 		// !!! role bilgisi varsa response nesnesindeki degisken setleniyor
 		role.ifPresent(authResponse::role);
 
-		// !!! AuthResponse nesnesi ResponseEntity ile donduruyoruz
 		return ResponseEntity.ok(authResponse.build());
 	}
 }
