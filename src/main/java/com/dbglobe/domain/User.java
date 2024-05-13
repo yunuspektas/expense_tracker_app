@@ -3,6 +3,8 @@ package com.dbglobe.domain;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -36,4 +38,7 @@ public class User {
 	private UserRole userRole; // entity.concretes.user
 
 	private Boolean built_in ;
+
+	@OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Set<Account> accounts = new HashSet<>();
 }
