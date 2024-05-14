@@ -39,44 +39,60 @@ public class ExpenseTrackerAppApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
+		createRolesIfRoleTableIsEmpty();
+		createAdminIfNotExist();
+		User user = createCustomerIfNotExist();
+		createAccount(user);
+	}
 
-		// !!! fill Role table if empty
-		if(userRoleService.getAllUserRole().isEmpty()){
-			userRoleService.save(RoleType.ADMIN);
-			userRoleService.save(RoleType.CUSTOMER);
+	private void createAccount(User user){
+		if(user!=null) {
+			Account accountRequest =
+					Account.builder()
+							.accountName("Cash")
+							.accountType(AccountType.EURO)
+							.balance(BigDecimal.valueOf(0.0))
+							.customer(user)
+							.build();
+			accountRepository.save(accountRequest);
 		}
-		// Create Built_In Admin if n't exist
-		if(userService.countAdminOrCustomer(RoleType.ADMIN)==0){
-			UserRequest adminRequest  = new UserRequest();
-			adminRequest.setUsername("Admin");
-			adminRequest.setPassword("12345678");
-			adminRequest.setName("Lars");
-			adminRequest.setSurname("Urich");
-			adminRequest.setPhoneNumber("111-111-1111");
-			userService.saveUser(adminRequest);
-		}
-		// Create Built_In Customer
+	}
+
+	private User createCustomerIfNotExist(){
 		if(userService.countAdminOrCustomer(RoleType.CUSTOMER)==0){
 
 			User customer  = new User();
 			customer.setUsername("Customer");
 			customer.setPassword(passwordEncoder.encode("123456"));
+			customer.setEmail("customer@customer.com");
 			customer.setName("Adem");
 			customer.setSurname("Nedim");
 			customer.setPhoneNumber("111-222-1111");
 			customer.setBuilt_in(Boolean.TRUE);
 			customer.setUserRole(userRoleService.getUserRole(RoleType.CUSTOMER));
 
-			User savedCustomer = userRepository.save(customer);
+			return userRepository.save(customer);
+		}
+		return null;
+	}
 
-			Account accountRequest =
-					Account.builder()
-							.accountName("Cash")
-							.accountType(AccountType.EURO)
-							.balance(BigDecimal.valueOf(0.0))
-							.customer(savedCustomer)
-							.build();
-			accountRepository.save(accountRequest);
+	private void createAdminIfNotExist(){
+		if(userService.countAdminOrCustomer(RoleType.ADMIN)==0){
+			UserRequest adminRequest  = new UserRequest();
+			adminRequest.setUsername("Admin");
+			adminRequest.setPassword("12345678");
+			adminRequest.setEmail("admin@admin.com");
+			adminRequest.setName("Lars");
+			adminRequest.setSurname("Urich");
+			adminRequest.setPhoneNumber("111-111-1111");
+			userService.saveUser(adminRequest);
+		}
+	}
+
+	private void createRolesIfRoleTableIsEmpty(){
+		if(userRoleService.getAllUserRole().isEmpty()){
+			userRoleService.save(RoleType.ADMIN);
+			userRoleService.save(RoleType.CUSTOMER);
 		}
 	}
 }
