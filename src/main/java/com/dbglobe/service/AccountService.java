@@ -19,7 +19,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -81,7 +80,7 @@ public class AccountService {
     @Transactional
     public Account deposit(Long accountId, BigDecimal amount, String category) {
         Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new IllegalArgumentException("Account not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMessages.ACCOUNT_NOT_FOUND_WITH_ID, accountId)));
 
         account.setBalance(account.getBalance().add(amount));
         Account savedAccount = accountRepository.save(account);
