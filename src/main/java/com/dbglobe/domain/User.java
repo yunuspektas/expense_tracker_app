@@ -13,7 +13,7 @@ import java.util.Set;
 @Builder(toBuilder = true)
 
 @Entity
-@Table(name = "t_user")
+@Table(name = "tbl_users")
 public class User {
 
 	@Id

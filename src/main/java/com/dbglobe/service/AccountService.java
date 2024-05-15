@@ -31,6 +31,7 @@ public class AccountService {
     private final UserRepository userRepository; // TODO : UserServcie uzerinden halledilecek
     private final TransactionRepository transactionRepository;
 
+    @Transactional
     public AccountResponse saveAccount(AccountRequest accountRequest, HttpServletRequest request) {
         String userName = (String) request.getAttribute("username");
         User customer = userRepository.findByUsername(userName).orElseThrow(()->
@@ -44,6 +45,7 @@ public class AccountService {
 
     }
 
+    @Transactional
     public String deleteAccount(Long id, HttpServletRequest request) {
         String userName = (String) request.getAttribute("username");
 
@@ -55,6 +57,7 @@ public class AccountService {
         } else return ErrorMessages.WRONG_ACCOUNT_MESSAGE;
     }
 
+    @Transactional
     public AccountResponse updateAccount(Long id, AccountRequest accountDetails) {
         Account account = accountRepository.findById(id).orElseThrow(() -> new RuntimeException("Account not found"));
 
@@ -79,6 +82,7 @@ public class AccountService {
 
     @Transactional
     public Account deposit(Long accountId, BigDecimal amount, String category) {
+
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMessages.ACCOUNT_NOT_FOUND_WITH_ID, accountId)));
 

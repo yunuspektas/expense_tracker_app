@@ -9,6 +9,7 @@ import com.dbglobe.repository.AccountRepository;
 import com.dbglobe.repository.UserRepository;
 import com.dbglobe.service.UserRoleService;
 import com.dbglobe.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -17,6 +18,7 @@ import java.math.BigDecimal;
 
 
 @SpringBootApplication
+@RequiredArgsConstructor
 public class ExpenseTrackerAppApplication implements CommandLineRunner {
 
 	private final UserRoleService userRoleService;
@@ -25,13 +27,6 @@ public class ExpenseTrackerAppApplication implements CommandLineRunner {
 	private final AccountRepository accountRepository;
 	private final PasswordEncoder passwordEncoder;
 
-    public ExpenseTrackerAppApplication(UserRoleService userRoleService, UserService userService, UserRepository userRepository, AccountRepository accountRepository, PasswordEncoder passwordEncoder) {
-        this.userRoleService = userRoleService;
-        this.userService = userService;
-        this.userRepository = userRepository;
-        this.accountRepository = accountRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     public static void main(String[] args) {
 		SpringApplication.run(ExpenseTrackerAppApplication.class, args);

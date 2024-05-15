@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -43,7 +44,7 @@ public class AccountController {
     }
 
     @PostMapping("/{accountId}/deposit")
-    public ResponseEntity<String> depositMoney(@PathVariable Long accountId, @RequestBody DepositWithDrawRequest transactionRequest) {
+    public ResponseEntity<String> depositMoney(@PathVariable Long accountId, @Valid @RequestBody DepositWithDrawRequest transactionRequest) {
         try {
             accountService.deposit(accountId, transactionRequest.getAmount(), transactionRequest.getCategory());
             return ResponseEntity.ok("Deposit successful.");
@@ -55,7 +56,7 @@ public class AccountController {
     }
 
     @PostMapping("/{accountId}/withdraw")
-    public ResponseEntity<String> withdrawMoney(@PathVariable Long accountId, @RequestBody DepositWithDrawRequest transactionRequest) {
+    public ResponseEntity<String> withdrawMoney(@PathVariable Long accountId, @Valid @RequestBody DepositWithDrawRequest transactionRequest) {
         try {
             accountService.withdraw(accountId, transactionRequest.getAmount(), transactionRequest.getCategory());
             return ResponseEntity.ok("Withdrawal successful.");
