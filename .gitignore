@@ -31,3 +31,15 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Compiled class files
+*.class
+
+# Log files
+logs/*.log
+
+# Maven
+target/
+
+# Built artifacts
+out/*.jar
