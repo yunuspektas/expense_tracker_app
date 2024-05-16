@@ -7,9 +7,8 @@ import com.dbglobe.domain.enums.AccountType;
 import com.dbglobe.dto.request.AccountRequest;
 import com.dbglobe.dto.response.AccountResponse;
 import com.dbglobe.exception.ResourceNotFoundException;
+import com.dbglobe.exception.UnauthorizedException;
 import com.dbglobe.payload.mappers.AccountMapper;
-import com.dbglobe.payload.messages.ErrorMessages;
-import com.dbglobe.payload.messages.SuccessMessages;
 import com.dbglobe.repository.AccountRepository;
 import com.dbglobe.repository.TransactionRepository;
 import com.dbglobe.repository.UserRepository;
@@ -19,19 +18,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class AccountServiceTest {
@@ -39,164 +36,166 @@ public class AccountServiceTest {
     @Mock
     private AccountRepository accountRepository;
     @Mock
-    private TransactionRepository transactionRepository;
-    @Mock
     private UserRepository userRepository;
     @Mock
     private AccountMapper accountMapper;
-
+    @Mock
+    private TransactionRepository transactionRepository;
+    @Mock
+    private UserDetails userDetails;
+    @Mock
+    private ServiceHelper serviceHelper;
     @InjectMocks
     private AccountService accountService;
+
     private AccountRequest accountRequest;
     private Account account;
     private User user;
     private AccountResponse accountResponse;
-    private MockHttpServletRequest request;
-    private BigDecimal withdrawAmount = new BigDecimal("500.00");
-    private BigDecimal initialBalance = new BigDecimal("1500.00");
 
     @BeforeEach
     void setUp() {
-
         user = new User();
         user.setUsername("testUser");
-
-        account = new Account();
-        account.setId(1L);
-        account.setCustomer(user);
-        account.setAccountName("Existing Account");
-        account.setAccountType(AccountType.EURO);
-        account.setBalance(BigDecimal.valueOf(1000));
 
         accountRequest = AccountRequest.builder()
                 .accountName("Saving")
                 .accountType(AccountType.EURO)
                 .build();
+
         account = new Account();
-        account.setAccountName("Saving");
-        account.setBalance(BigDecimal.ZERO);
+        account.setId(1L);
         account.setCustomer(user);
+        account.setAccountName("Saving");
+        account.setAccountType(AccountType.EURO);
+        account.setBalance(BigDecimal.ZERO);
 
         accountResponse = AccountResponse.builder()
                 .accountName("Saving")
                 .accountType(AccountType.EURO)
                 .balance(BigDecimal.ZERO)
                 .build();
-
-        request = new MockHttpServletRequest();
-        request.setAttribute("username", "testUser");
     }
 
-    // ********************* TEST FOR CREATE METHOD ***********************************
     @Test
     void whenCreateAccount_thenAccountIsSavedSuccessfully() {
-/*        given(userRepository.findByUsername("testUser")).willReturn(Optional.of(user));
+
+        given(serviceHelper.getUserNameFromUserDetails(userDetails)).willReturn("testUser");
         given(accountMapper.mapAccountRequestToAccount(accountRequest)).willReturn(account);
         given(accountRepository.save(account)).willReturn(account);
         given(accountMapper.mapAccountToAccountResponse(account)).willReturn(accountResponse);
 
-        AccountResponse createdAccount = accountService.createAccount(accountRequest, request);
+        AccountResponse createdAccount = accountService.createAccount(accountRequest, userDetails);
 
         assertThat(createdAccount.getAccountName()).isEqualTo("Saving");
         assertThat(createdAccount.getBalance()).isEqualTo(BigDecimal.ZERO);
-        verify(accountRepository).save(account);*/
+        verify(accountRepository).save(account);
     }
 
     @Test
     void whenCreateAccountWithNonExistUser_thenThrowsException() {
-/*        given(userRepository.findByUsername("nonexistent")).willReturn(Optional.empty());
-        request.setAttribute("username", "nonexistent");
 
-        assertThrows(ResourceNotFoundException.class, () -> {
-            accountService.createAccount(accountRequest, request);
-        });*/
+        given(serviceHelper.getUserNameFromUserDetails(userDetails)).willReturn("nonexistent");
+        assertThrows(NullPointerException.class, () -> {
+            accountService.createAccount(accountRequest, userDetails);
+        });
+
+        verify(accountRepository, never()).save(any(Account.class));
     }
 
-    // ********************* TEST FOR DELETE METHOD ***********************************
     @Test
     void whenDeleteAccount_thenDeleteTheAccount() {
 
-    /*    given(accountRepository.findById(1L)).willReturn(Optional.of(account));
+        given(serviceHelper.getUserNameFromUserDetails(userDetails)).willReturn("testUser");
+        given(accountRepository.findById(1L)).willReturn(Optional.of(account));
 
-        String result = accountService.deleteAccount(1L, request);
+        accountService.deleteAccount(1L, userDetails);
 
-        assertThat(result).isEqualTo(SuccessMessages.ACCOUNT_DELETE);
-        verify(accountRepository).delete(account);*/
+        verify(accountRepository).delete(account);
     }
 
     @Test
     void whenDeleteAccountWithNonExistentAccount_thenThrowException() {
 
-        /*given(accountRepository.findById(anyLong())).willReturn(Optional.empty());
+        given(serviceHelper.getUserNameFromUserDetails(userDetails)).willReturn("testUser");
+        given(accountRepository.findById(1L)).willReturn(Optional.empty());
 
         assertThrows(RuntimeException.class, () -> {
-            accountService.deleteAccount(1L, request);
+            accountService.deleteAccount(1L, userDetails);
         });
 
-        verify(accountRepository, never()).delete(any(Account.class));*/
+        verify(accountRepository, never()).delete(any(Account.class));
     }
 
     @Test
-    void whenDeleteAccountWithUnauthorizedUser_thenReturnErrorMessage() {
+    void whenDeleteAccountWithUnauthorizedUser_thenThrowException() {
 
-  /*      User differentUser = new User();
-        differentUser.setUsername("anotherUser");
-        account.setCustomer(differentUser);
-
+        given(serviceHelper.getUserNameFromUserDetails(userDetails)).willReturn("testUser");
+        User anotherUser = new User();
+        anotherUser.setUsername("anotherUser");
+        account.setCustomer(anotherUser);
         given(accountRepository.findById(1L)).willReturn(Optional.of(account));
 
-        String result = accountService.deleteAccount(1L, request);
+        assertThrows(UnauthorizedException.class, () -> {
+            accountService.deleteAccount(1L, userDetails);
+        });
 
-        assertThat(result).isEqualTo(ErrorMessages.WRONG_ACCOUNT_MESSAGE);
-        verify(accountRepository, never()).delete(any(Account.class));*/
+        verify(accountRepository, never()).delete(any(Account.class));
     }
 
-    // ********************* TEST FOR UPDATE METHOD ******************************
     @Test
     void whenUpdateAccount_thenAccountUpdatedSuccessfully() {
 
+        given(serviceHelper.getUserNameFromUserDetails(userDetails)).willReturn("testUser");
         given(accountRepository.findById(1L)).willReturn(Optional.of(account));
-        given(accountRepository.save(any(Account.class))).willReturn(account);
-        given(accountMapper.mapAccountToAccountResponse(any(Account.class))).willReturn(accountResponse);
+        given(accountRepository.save(account)).willReturn(account);
+        given(accountMapper.mapAccountToAccountResponse(account)).willReturn(accountResponse);
 
-       // AccountResponse updatedAccountResponse = accountService.updateAccount(1L, accountRequest, userDetails);
+        AccountResponse updatedAccount = accountService.updateAccount(1L, accountRequest, userDetails);
 
-        //assertThat(updatedAccountResponse.getAccountName()).isEqualTo("Saving");
+        assertThat(updatedAccount.getAccountName()).isEqualTo("Saving");
         verify(accountRepository).save(account);
     }
 
     @Test
     void whenUpdateNonExistentAccount_thenThrowException() {
 
-        given(accountRepository.findById(any())).willReturn(Optional.empty());
-        //assertThrows(RuntimeException.class, () -> accountService.updateAccount(1L, accountRequest, userDetails));
+        given(serviceHelper.getUserNameFromUserDetails(userDetails)).willReturn("testUser");
+        given(accountRepository.findById(1L)).willReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> {
+            accountService.updateAccount(1L, accountRequest, userDetails);
+        });
+
+        verify(accountRepository, never()).save(any(Account.class));
     }
 
-    // ********************* TEST FOR DEPOSIT METHOD ******************************
+    @Test
+    void whenGetAll_thenReturnAccountList() {
+
+        given(serviceHelper.getUserNameFromUserDetails(userDetails)).willReturn("testUser");
+        given(serviceHelper.getUserByUsername("testUser")).willReturn(user);
+        given(accountRepository.findByCustomerId(user.getId())).willReturn(Collections.singletonList(account));
+        given(accountMapper.mapAccountToAccountResponse(account)).willReturn(accountResponse);
+
+        List<AccountResponse> accounts = accountService.getAll(userDetails);
+
+        assertThat(accounts).hasSize(1);
+        assertThat(accounts.get(0).getAccountName()).isEqualTo("Saving");
+    }
 
     @Test
     void whenDeposit_thenAccountBalanceShouldIncrease() {
+
         BigDecimal depositAmount = BigDecimal.valueOf(500);
-        BigDecimal initialBalance = account.getBalance();
-        String category = "Salary";
+        given(serviceHelper.getUserNameFromUserDetails(userDetails)).willReturn("testUser");
         given(accountRepository.findById(1L)).willReturn(Optional.of(account));
+        given(accountRepository.save(account)).willReturn(account);
 
-        Account updatedAccount = new Account();
-        updatedAccount.setId(account.getId());
-        updatedAccount.setCustomer(user);
-        updatedAccount.setAccountName(account.getAccountName());
-        updatedAccount.setAccountType(account.getAccountType());
-        updatedAccount.setBalance(initialBalance.add(depositAmount));
+        Account updatedAccount = accountService.deposit(1L, userDetails, depositAmount, "Salary");
 
-        given(accountRepository.save(any(Account.class))).willAnswer(invocation -> {
-            Account savedAccount = invocation.getArgument(0);
-            savedAccount.setBalance(initialBalance.add(depositAmount));
-            return savedAccount;
-        });
-
-        //Account resultAccount = accountService.deposit(1L, userDetails, depositAmount, category);
-
-        //assertThat(resultAccount.getBalance()).isEqualByComparingTo(initialBalance.add(depositAmount));
+        assertThat(updatedAccount.getBalance()).isEqualByComparingTo(BigDecimal.ZERO.add(depositAmount));
+        verify(accountRepository).save(account);
         verify(transactionRepository).save(any(Transaction.class));
     }
 
@@ -204,44 +203,61 @@ public class AccountServiceTest {
     void whenDepositToNonExistentAccount_thenThrowException() {
 
         BigDecimal depositAmount = BigDecimal.valueOf(500);
-        String category = "Salary";
-        given(accountRepository.findById(any())).willReturn(Optional.empty());
+        given(serviceHelper.getUserNameFromUserDetails(userDetails)).willReturn("testUser");
+        given(accountRepository.findById(1L)).willReturn(Optional.empty());
 
-        //assertThrows(ResourceNotFoundException.class, () -> accountService.deposit(1L, userDetails, depositAmount, category));
-    }
-
-    // ********************* TEST FOR WITHDRAW METHOD ******************************
-
-    @Test
-    void testWithdrawSuccess() {
-
-        BigDecimal initialBalance = new BigDecimal("1500.00");
-        BigDecimal withdrawAmount = new BigDecimal("500.00");  // Bu miktar initialBalance'dan küçük olmalıdır.
-        account.setBalance(initialBalance);
-
-        given(accountRepository.findById(any(Long.class))).willReturn(java.util.Optional.of(account));
-        given(accountRepository.save(any(Account.class))).willReturn(account);
-
-        // Act
-       // Account result = accountService.withdraw(1L, userDetails, withdrawAmount, "Utility");
-
-        // Assert
-        verify(accountRepository).save(account);
-        //assertEquals(0, initialBalance.subtract(withdrawAmount).compareTo(result.getBalance()), "The balance should be reduced by the withdraw amount.");
-    }
-
-
-    @Test
-    void testWithdrawFailureDueToInsufficientFunds() {
-
-        BigDecimal largeWithdrawAmount = new BigDecimal("2000.00");
-        given(accountRepository.findById(any(Long.class))).willReturn(java.util.Optional.of(account));
-
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-           // accountService.withdraw(1L, userDetails, largeWithdrawAmount, "Expensive Purchase");
+        assertThrows(ResourceNotFoundException.class, () -> {
+            accountService.deposit(1L, userDetails, depositAmount, "Salary");
         });
 
-        assertEquals("Insufficient funds", exception.getMessage());
         verify(accountRepository, never()).save(any(Account.class));
+        verify(transactionRepository, never()).save(any(Transaction.class));
+    }
+
+    @Test
+    void whenWithdraw_thenAccountBalanceShouldDecrease() {
+
+        BigDecimal withdrawAmount = BigDecimal.valueOf(500);
+        account.setBalance(BigDecimal.valueOf(1000));
+        given(serviceHelper.getUserNameFromUserDetails(userDetails)).willReturn("testUser");
+        given(accountRepository.findById(1L)).willReturn(Optional.of(account));
+        given(accountRepository.save(account)).willReturn(account);
+
+        Account updatedAccount = accountService.withdraw(1L, userDetails, withdrawAmount, "Utility");
+
+        assertThat(updatedAccount.getBalance()).isEqualByComparingTo(BigDecimal.valueOf(1000).subtract(withdrawAmount));
+        verify(accountRepository).save(account);
+        verify(transactionRepository).save(any(Transaction.class));
+    }
+
+    @Test
+    void whenWithdrawFromNonExistentAccount_thenThrowException() {
+
+        BigDecimal withdrawAmount = BigDecimal.valueOf(500);
+        given(serviceHelper.getUserNameFromUserDetails(userDetails)).willReturn("testUser");
+        given(accountRepository.findById(1L)).willReturn(Optional.empty());
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            accountService.withdraw(1L, userDetails, withdrawAmount, "Utility");
+        });
+
+        verify(accountRepository, never()).save(any(Account.class));
+        verify(transactionRepository, never()).save(any(Transaction.class));
+    }
+
+    @Test
+    void whenWithdrawWithInsufficientFunds_thenThrowException() {
+
+        BigDecimal withdrawAmount = BigDecimal.valueOf(1500);
+        account.setBalance(BigDecimal.valueOf(1000));
+        given(serviceHelper.getUserNameFromUserDetails(userDetails)).willReturn("testUser");
+        given(accountRepository.findById(1L)).willReturn(Optional.of(account));
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            accountService.withdraw(1L, userDetails, withdrawAmount, "Utility");
+        });
+
+        verify(accountRepository, never()).save(any(Account.class));
+        verify(transactionRepository, never()).save(any(Transaction.class));
     }
 }
