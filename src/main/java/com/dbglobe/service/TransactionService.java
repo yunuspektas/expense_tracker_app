@@ -39,7 +39,7 @@ public class TransactionService {
         if(account.getCustomer().getUsername().equals(userName)) {
             transactions = transactionJpaRepository.findByAccountId(accountId);
         }else {
-            throw new UnauthorizedException("You do not have permission to delete this account");
+            throw new UnauthorizedException("You do not have permission to get this account's transactions");
         }
 
         return transactions.stream()
@@ -62,7 +62,7 @@ public class TransactionService {
             accountRepository.save(account);
             transactionJpaRepository.delete(transaction);
         }else {
-            throw new UnauthorizedException("You do not have permission to delete this account");
+            throw new UnauthorizedException("You do not have permission to delete this account's transaction");
         }
     }
 
@@ -80,7 +80,7 @@ public class TransactionService {
                     .map(transactionMapper::mapTransactionToTransactionResponse)
                     .collect(Collectors.toList());
         }else {
-            throw new UnauthorizedException("You do not have permission to delete this account");
+            throw new UnauthorizedException("You do not have permission to search this account's transaction");
         }
     }
 }

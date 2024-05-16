@@ -6,7 +6,6 @@ import com.dbglobe.domain.User;
 import com.dbglobe.domain.enums.TransactionType;
 import com.dbglobe.dto.request.AccountRequest;
 import com.dbglobe.dto.response.AccountResponse;
-import com.dbglobe.exception.BadRequestException;
 import com.dbglobe.exception.ResourceNotFoundException;
 import com.dbglobe.exception.UnauthorizedException;
 import com.dbglobe.payload.mappers.AccountMapper;
@@ -17,7 +16,6 @@ import com.dbglobe.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -69,7 +67,7 @@ public class AccountService {
             account.setAccountType(accountDetails.getAccountType());
             savedAccount = accountRepository.save(account);
         }else {
-            throw new UnauthorizedException("You do not have permission to delete this account");
+            throw new UnauthorizedException("You do not have permission to update this account");
         }
         return accountMapper.mapAccountToAccountResponse(savedAccount);
     }
@@ -105,7 +103,7 @@ public class AccountService {
             transaction.setCategory(category);
             transactionRepository.save(transaction);
         }else {
-            throw new UnauthorizedException("You do not have permission to delete this account");
+            throw new UnauthorizedException("You do not have permission to deposit this account");
         }
         return savedAccount;
     }
@@ -136,7 +134,7 @@ public class AccountService {
             transaction.setCategory(category); // Category comes from the user input
             transactionRepository.save(transaction);
         }else {
-            throw new UnauthorizedException("You do not have permission to delete this account");
+            throw new UnauthorizedException("You do not have permission to withdraw this account");
         }
         return savedAccount;
     }

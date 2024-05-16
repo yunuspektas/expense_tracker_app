@@ -448,14 +448,6 @@
 				}
 			},
 			"response": []
-		},
-		{
-			"name": "testUnauthorized",
-			"request": {
-				"method": "GET",
-				"header": []
-			},
-			"response": []
 		}
 	],
 	"auth": {

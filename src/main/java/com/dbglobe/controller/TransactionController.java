@@ -1,7 +1,5 @@
 package com.dbglobe.controller;
 
-import com.dbglobe.domain.Transaction;
-import com.dbglobe.dto.request.TransactionRequest;
 import com.dbglobe.dto.response.TransactionResponse;
 import com.dbglobe.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +18,6 @@ import java.util.List;
 public class TransactionController {
     @Autowired
     private TransactionService transactionService;
-
 
 
     @GetMapping("/accounts/{accountId}/transactions")

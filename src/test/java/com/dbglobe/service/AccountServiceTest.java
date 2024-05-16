@@ -19,7 +19,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
@@ -47,7 +46,6 @@ public class AccountServiceTest {
     private ServiceHelper serviceHelper;
     @InjectMocks
     private AccountService accountService;
-
     private AccountRequest accountRequest;
     private Account account;
     private User user;

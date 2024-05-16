@@ -11,7 +11,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -53,29 +52,16 @@ public class AccountController {
                                                @Valid @RequestBody DepositWithDrawRequest transactionRequest,
                                                @AuthenticationPrincipal UserDetails userDetails) {
 
-        try {
             accountService.deposit(accountId, userDetails, transactionRequest.getAmount(), transactionRequest.getCategory());
             return ResponseEntity.ok("Deposit successful.");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("An error occurred: " + e.getMessage());
-        }
     }
 
     @PostMapping("/{accountId}/withdraw")
     public ResponseEntity<String> withdrawMoney(@PathVariable Long accountId,
                                                 @Valid @RequestBody DepositWithDrawRequest transactionRequest,
                                                 @AuthenticationPrincipal UserDetails userDetails) {
-        try {
+
             accountService.withdraw(accountId, userDetails, transactionRequest.getAmount(), transactionRequest.getCategory());
             return ResponseEntity.ok("Withdrawal successful.");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("An error occurred: " + e.getMessage());
-        }
     }
-
-
 }

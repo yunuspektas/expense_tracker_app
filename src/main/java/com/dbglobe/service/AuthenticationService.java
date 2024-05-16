@@ -24,19 +24,15 @@ public class AuthenticationService {
 	public final AuthenticationManager authenticationManager;
 
 	public ResponseEntity<AuthResponse> authenticateUser(LoginRequest loginRequest){
-		//!!! Gelen requestin icinden kullanici adi ve parola bilgisi aliniyor
+
 		String username = loginRequest.getUsername();
 		String password = loginRequest.getPassword();
 
-		// !!! authenticationManager uzerinden kullaniciyi valide ediyoruz
 		Authentication authentication =
 				authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username,password));
 
-		// !!! valide edilen kullanici Context e atiliyor
 		SecurityContextHolder.getContext().setAuthentication(authentication);
-		// !!! JWT token olusturuluyor
 		String token = "Bearer " + jwtUtils.generateJtwToken(authentication);
-		// !!! GrantedAuthority turundeki role yapisini String turune ceviriliyor
 		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
 		Set<String> roles = userDetails.getAuthorities()
@@ -44,14 +40,13 @@ public class AuthenticationService {
 				.map(GrantedAuthority::getAuthority)
 				.collect(Collectors.toSet());
 
-		//!!! bir kullanicinin birden fazla rolu olmayacagi icin ilk indexli elemani aliyoruz
 		Optional<String> role = roles.stream().findFirst();
 
 		AuthResponse.AuthResponseBuilder authResponse = AuthResponse.builder();
 		authResponse.username(userDetails.getUsername());
 		authResponse.token(token.substring(7));
 		authResponse.name(userDetails.getName());
-		// !!! role bilgisi varsa response nesnesindeki degisken setleniyor
+
 		role.ifPresent(authResponse::role);
 
 		return ResponseEntity.ok(authResponse.build());
