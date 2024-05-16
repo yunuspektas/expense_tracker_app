@@ -42,4 +42,4 @@ logs/*.log
 target/
 
 # Built artifacts
-out/*.jar
+out/
