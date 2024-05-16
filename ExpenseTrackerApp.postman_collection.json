@@ -241,7 +241,7 @@
 									"bearer": [
 										{
 											"key": "token",
-											"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJDdXN0b21lciIsImlhdCI6MTcxNTYwNzkxNSwiZXhwIjoxNzE1NjE2NTU1fQ.62di0d9Z7mJjwg-dwzTuVQUovjfWZi9SchPCx2cT-PqR1ZTSSdTQTOa9jJ6q5wIawb_j_ogdRA-oTP-zMlJeYw",
+											"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJDdXN0b21lciIsImlhdCI6MTcxNTg0ODY0OCwiZXhwIjoxNzE1ODU3Mjg4fQ.eudKYKbD8G9DISfvWsmU2t3IjgvuWCdwzfkKzZTLm1FwBuN9w3L-ibhPwcTDzQ08hdFGQjBTa_O1IUAhIjeHHA",
 											"type": "string"
 										}
 									]
@@ -249,20 +249,24 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:8080/transactions/search?category=Pho&startDate=2023-01-01&endDate=2025-01-31",
+									"raw": "http://localhost:8080/transaction/search?category=Ph&accountId=1&startDate=2023-01-01&endDate=2025-01-31",
 									"protocol": "http",
 									"host": [
 										"localhost"
 									],
 									"port": "8080",
 									"path": [
-										"transactions",
+										"transaction",
 										"search"
 									],
 									"query": [
 										{
 											"key": "category",
-											"value": "Pho"
+											"value": "Ph"
+										},
+										{
+											"key": "accountId",
+											"value": "1"
 										},
 										{
 											"key": "startDate",
@@ -315,7 +319,7 @@
 									"bearer": [
 										{
 											"key": "token",
-											"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJDdXN0b21lciIsImlhdCI6MTcxNTYwNzkxNSwiZXhwIjoxNzE1NjE2NTU1fQ.62di0d9Z7mJjwg-dwzTuVQUovjfWZi9SchPCx2cT-PqR1ZTSSdTQTOa9jJ6q5wIawb_j_ogdRA-oTP-zMlJeYw",
+											"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJDdXN0b21lciIsImlhdCI6MTcxNTg0ODY0OCwiZXhwIjoxNzE1ODU3Mjg4fQ.eudKYKbD8G9DISfvWsmU2t3IjgvuWCdwzfkKzZTLm1FwBuN9w3L-ibhPwcTDzQ08hdFGQjBTa_O1IUAhIjeHHA",
 											"type": "string"
 										}
 									]
@@ -323,15 +327,16 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:8080/transactions/1",
+									"raw": "http://localhost:8080/accounts/1/transactions",
 									"protocol": "http",
 									"host": [
 										"localhost"
 									],
 									"port": "8080",
 									"path": [
-										"transactions",
-										"1"
+										"accounts",
+										"1",
+										"transactions"
 									]
 								}
 							},
@@ -413,7 +418,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJBZG1pbiIsImlhdCI6MTcxNTMzNzI1NSwiZXhwIjoxNzE1MzQ1ODk1fQ.O8jSVsTbLyDfM9FmruQ3m3ek096Zl3h9Beee5WuPsOLDTtgpnZWYFVBBOVV3AUvlrQ80PC5_5RJV6PRrb1Wk6A",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJBZG1pbiIsImlhdCI6MTcxNTg0ODg0MiwiZXhwIjoxNzE1ODU3NDgyfQ.OzUo5wfXMbJwDO_6ToHfUxATza5MPAgZ3oEo6b7uD9D_d4nEfKaKpApOj9_a3qf6PGsiiJ2flm_by8Z3hDVFZQ",
 							"type": "string"
 						}
 					]
@@ -422,7 +427,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"username\" : \"Customer2\",\n    \"name\" : \"Deneme\",\n    \"surname\" : \"Deneme\",\n    \"phoneNumber\" : \"(123) 426-7890\",\n    \"password\" : \"12345678\"\n}",
+					"raw": "{\n    \"username\" : \"Customer2\",\n    \"name\" : \"Deneme\",\n    \"surname\" : \"Deneme\",\n    \"email\" : \"dsds@adasd.com\",\n    \"phoneNumber\" : \"(123) 426-7890\",\n    \"password\" : \"123456\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -443,6 +448,44 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "testUnauthorized",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJDdXN0b21lciIsImlhdCI6MTcxNTc2MTg5MSwiZXhwIjoxNzE1NzcwNTMxfQ.l0fd7mGd2W8Wef4jHWraxlCsIxPeNTv9QtaQevkhLn91zyZCFt0Ok16wxRPve_l0Wir_XsdMlmNu8-DJ5wDI_Q",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
 		}
 	]
 }
