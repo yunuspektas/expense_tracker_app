@@ -4,16 +4,13 @@ import com.dbglobe.domain.enums.AccountType;
 import lombok.*;
 import java.math.BigDecimal;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
+@Value
 @Builder
 public class AccountResponse {
 
-    private String accountName;
+    String accountName;
 
-    private AccountType accountType;
+    AccountType accountType;
 
-    private BigDecimal balance;
+    BigDecimal balance;
 }

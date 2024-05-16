@@ -10,7 +10,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -23,24 +22,23 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
 	private final UserDetailsServiceImpl userDetailsService;
 	private final AuthEntryPointJwt unauthorizedHandler;
+	private final CustomAccessDeniedHandler accessDeniedHandler;
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http.cors().and()
 				.csrf().disable()
-				//we configured unauthorized exception handler
-				.exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
-				//we configured session management
+				.exceptionHandling()
+				.authenticationEntryPoint(unauthorizedHandler)
+				.accessDeniedHandler(accessDeniedHandler).and()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-				// we added white list
-				.authorizeRequests().antMatchers(AUTH_WHITE_LIST).permitAll()
-				// except white list we authenticate all request
+				.authorizeRequests()
+				.antMatchers(AUTH_WHITE_LIST).permitAll()
 				.anyRequest().authenticated();
 
 		http.headers().frameOptions().sameOrigin();
@@ -95,6 +93,7 @@ public class WebSecurityConfig {
 			"/images/**",
 			"/css/**",
 			"/js/**",
-			"/auth/login"
+			"/auth/login",
+			"/test-unauthorized"
 	};
 }

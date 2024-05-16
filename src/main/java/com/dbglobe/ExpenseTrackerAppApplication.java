@@ -73,13 +73,13 @@ public class ExpenseTrackerAppApplication implements CommandLineRunner {
 
 	private void createAdminIfNotExist(){
 		if(userService.countAdminOrCustomer(RoleType.ADMIN)==0){
-			UserRequest adminRequest  = new UserRequest();
-			adminRequest.setUsername("Admin");
+			UserRequest adminRequest  = new UserRequest("Admin","Lars","Urich","111-111-1111","admin@admin.com","12345678");
+/*			adminRequest.setUsername("Admin");
 			adminRequest.setPassword("12345678");
 			adminRequest.setEmail("admin@admin.com");
 			adminRequest.setName("Lars");
 			adminRequest.setSurname("Urich");
-			adminRequest.setPhoneNumber("111-111-1111");
+			adminRequest.setPhoneNumber("111-111-1111");*/
 			userService.saveUser(adminRequest);
 		}
 	}

@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: expense-tracker-app
+  datasource:
+    url: 'jdbc:postgresql://localhost:5432/dbglobe_db'
+    username: db_user
+    password: db_password
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
+server:
+  error:
+    include-binding-errors: always
+    include-message: always
+    include-stacktrace: never
+backendapi:
+  app:
+    jwtSecret: dbglobe
+    jwtExpirationMs: '8640000'
+logging:
+  file:
+    name: logs/dbglobe.log
+  pattern:
+    file: '"%d %-5level [%thread] %logger:%msg%n"'
+  level:
+    org:
+      springframework:
+        web: WARN
+      hibernate: INFO
+    com:
+      project: INFO

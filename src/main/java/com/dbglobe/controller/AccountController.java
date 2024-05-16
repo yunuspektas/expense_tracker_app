@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -21,32 +23,38 @@ public class AccountController {
 
     @PostMapping
     @PreAuthorize("hasAnyAuthority('CUSTOMER')")
-    public ResponseEntity<AccountResponse> createAccount(@RequestBody AccountRequest accountRequest, HttpServletRequest request) {
-        return new ResponseEntity<>(accountService.saveAccount(accountRequest,request), HttpStatus.CREATED);
+    public ResponseEntity<AccountResponse> createAccount(@RequestBody AccountRequest accountRequest, @AuthenticationPrincipal UserDetails userDetails) {
+        return new ResponseEntity<>(accountService.createAccount(accountRequest,userDetails), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('CUSTOMER')")
-    public ResponseEntity<AccountResponse> updateAccount(@PathVariable Long id, @RequestBody AccountRequest accountRequest) {
-        return ResponseEntity.ok(accountService.updateAccount(id, accountRequest));
+    public ResponseEntity<AccountResponse> updateAccount(@PathVariable Long id,
+                                                         @RequestBody AccountRequest accountRequest,
+                                                         @AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok(accountService.updateAccount(id, accountRequest, userDetails));
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @PreAuthorize("hasAnyAuthority('CUSTOMER')")
-    public ResponseEntity<String> deleteAccount(@PathVariable Long id, HttpServletRequest request) {
-        return ResponseEntity.ok(accountService.deleteAccount(id, request));
+    public void deleteAccount(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
+        accountService.deleteAccount(id, userDetails);
     }
 
     @GetMapping
     @PreAuthorize("hasAnyAuthority('CUSTOMER')")
-    public ResponseEntity<List<AccountResponse>> getAll(HttpServletRequest request){
-        return ResponseEntity.ok(accountService.getAll(request));
+    public ResponseEntity<List<AccountResponse>> getAll(@AuthenticationPrincipal UserDetails userDetails){
+        return ResponseEntity.ok(accountService.getAll(userDetails));
     }
 
     @PostMapping("/{accountId}/deposit")
-    public ResponseEntity<String> depositMoney(@PathVariable Long accountId, @Valid @RequestBody DepositWithDrawRequest transactionRequest) {
+    public ResponseEntity<String> depositMoney(@PathVariable Long accountId,
+                                               @Valid @RequestBody DepositWithDrawRequest transactionRequest,
+                                               @AuthenticationPrincipal UserDetails userDetails) {
+
         try {
-            accountService.deposit(accountId, transactionRequest.getAmount(), transactionRequest.getCategory());
+            accountService.deposit(accountId, userDetails, transactionRequest.getAmount(), transactionRequest.getCategory());
             return ResponseEntity.ok("Deposit successful.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
@@ -56,9 +64,11 @@ public class AccountController {
     }
 
     @PostMapping("/{accountId}/withdraw")
-    public ResponseEntity<String> withdrawMoney(@PathVariable Long accountId, @Valid @RequestBody DepositWithDrawRequest transactionRequest) {
+    public ResponseEntity<String> withdrawMoney(@PathVariable Long accountId,
+                                                @Valid @RequestBody DepositWithDrawRequest transactionRequest,
+                                                @AuthenticationPrincipal UserDetails userDetails) {
         try {
-            accountService.withdraw(accountId, transactionRequest.getAmount(), transactionRequest.getCategory());
+            accountService.withdraw(accountId, userDetails, transactionRequest.getAmount(), transactionRequest.getCategory());
             return ResponseEntity.ok("Withdrawal successful.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());

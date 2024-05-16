@@ -3,17 +3,17 @@ package com.dbglobe.dto.request;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Value;
+
 import javax.validation.constraints.NotNull;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+@Value
 public class LoginRequest {
 
 	@NotNull(message = "Username must not be empty")
-	private String username;
+	String username;
 
 	@NotNull(message = "Password must not be empty")
-	private String password;
+	String password;
 
 }

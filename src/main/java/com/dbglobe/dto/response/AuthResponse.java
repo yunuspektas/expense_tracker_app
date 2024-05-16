@@ -1,20 +1,15 @@
 package com.dbglobe.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+@Value
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AuthResponse {
 
-	private String username;
-	private String role;
-	private String token;
-	private String name;
+	String username;
+	String role;
+	String token;
+	String name;
 }

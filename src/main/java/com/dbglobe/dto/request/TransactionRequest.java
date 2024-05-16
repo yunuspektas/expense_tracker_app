@@ -6,14 +6,11 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
+@Value
 @Builder
 public class TransactionRequest {
 
-    private LocalDate date = LocalDate.now();
-    private BigDecimal amount;
-    private String category; // Enum olabilir
+    LocalDate date = LocalDate.now();
+    BigDecimal amount;
+    String category; // Enum olabilir
 }

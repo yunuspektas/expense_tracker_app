@@ -2,14 +2,11 @@ package com.dbglobe.dto.response;
 
 import lombok.*;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
+@Value
 @Builder
 public class UserResponse {
 
-    private Long userId;
-    private String username;
-    private String userRole;
+    Long userId;
+    String username;
+    String userRole;
 }
