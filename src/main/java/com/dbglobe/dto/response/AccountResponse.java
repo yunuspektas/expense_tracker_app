@@ -8,6 +8,8 @@ import java.math.BigDecimal;
 @Builder
 public class AccountResponse {
 
+    Long accountId;
+
     String accountName;
 
     AccountType accountType;

@@ -69,6 +69,7 @@ public class AccountServiceTest {
         account.setBalance(BigDecimal.ZERO);
 
         accountResponse = AccountResponse.builder()
+                .accountId(1L)
                 .accountName("Saving")
                 .accountType(AccountType.EURO)
                 .balance(BigDecimal.ZERO)
