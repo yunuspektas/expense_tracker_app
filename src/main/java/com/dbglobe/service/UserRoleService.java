@@ -16,7 +16,7 @@ public class UserRoleService {
 	private final UserRoleRepository userRoleRepository;
 
 	public UserRole getUserRole (RoleType roleType){
-		return userRoleRepository.findByEnumRoleEquals(roleType).orElseThrow(
+		return userRoleRepository.findByRoleType(roleType).orElseThrow(
 				()-> new ConflictException(ErrorMessages.ROLE_NOT_FOUND));
 	}
 
@@ -25,7 +25,7 @@ public class UserRoleService {
 	}
 
 	public UserRole save (RoleType roleType){
-		if(userRoleRepository.existsByEnumRoleEquals(roleType)){
+		if(userRoleRepository.existsByRoleType(roleType)){
 			throw new ConflictException(ErrorMessages.ROLE_ALREADY_EXIST);
 		}
 		UserRole userRole = UserRole.builder().roleType(roleType).build();
