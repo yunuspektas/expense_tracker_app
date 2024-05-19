@@ -26,10 +26,6 @@ backendapi:
     jwtSecret: dbglobe
     jwtExpirationMs: '8640000'
 logging:
-  file:
-    name: logs/dbglobe.log
-  pattern:
-    file: '"%d %-5level [%thread] %logger:%msg%n"'
   level:
     org:
       springframework:

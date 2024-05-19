@@ -2,8 +2,7 @@ package com.dbglobe.security.jwt;
 
 import com.dbglobe.security.service.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,11 +18,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class AuthTokenFilter extends OncePerRequestFilter {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(AuthTokenFilter.class);
 
 	private final JwtUtils jwtUtils;
 	private final UserDetailsServiceImpl userDetailsService;
@@ -50,7 +48,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 				}
 
 		} catch (UsernameNotFoundException e){
-			LOGGER.error("Cannot set user authentication" , e);
+			log.error("Cannot set user authentication" , e);
 		}
 		filterChain.doFilter(request,response);
 	}
