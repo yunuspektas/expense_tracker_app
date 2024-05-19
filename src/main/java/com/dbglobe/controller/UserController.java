@@ -19,9 +19,9 @@ public class UserController {
     // Not : saveUser() *************************************************************
     @PostMapping("/save")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    public ResponseEntity<UserResponse> saveUser(
+    public ResponseEntity<UserResponse> createCustomer(
             @RequestBody @Valid UserRequest userRequest){
-        return ResponseEntity.ok(userService.saveUser(userRequest));
+        return ResponseEntity.ok(userService.createUser(userRequest));
     }
 
 

@@ -13,7 +13,7 @@ public class UserMapper {
         return UserResponse.builder()
                 .userId(user.getId())
                 .username(user.getUsername())
-                .userRole(user.getUserRole().getRoleType().name())
+                .userRole(user.getRole().name())
                 .build();
     }
 

@@ -1,6 +1,5 @@
 package com.dbglobe.service;
 
-import com.dbglobe.domain.User;
 import com.dbglobe.domain.enums.RoleType;
 import com.dbglobe.dto.request.UserRequest;
 import com.dbglobe.dto.response.UserResponse;
@@ -18,10 +17,9 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final UserRoleService userRoleService;
     private final UserMapper userMapper;
 
-    public UserResponse saveUser(UserRequest userRequest) {
+    public UserResponse createUser(UserRequest userRequest) {
         // !!! is username - phoneNumber unique ???
         if (userRepository.existsByUsername(userRequest.getUsername()) ||
                 userRepository.existsByPhoneNumber(userRequest.getPhoneNumber()) ){
@@ -29,20 +27,10 @@ public class UserService {
                     ErrorMessages.USERNAME_PHONE_UNIQUE_MESSAGE));
         }
 
-        User newUser = userMapper.mapUserRequestToUser(userRequest);
+        var newUser = userMapper.mapUserRequestToUser(userRequest);
         newUser.setPassword(passwordEncoder.encode(userRequest.getPassword()));
+        newUser.setRole(RoleType.CUSTOMER);
 
-        if(userRequest.getUsername().equals("Admin")) {
-            newUser.setUserRole(userRoleService.getUserRole(RoleType.ADMIN));
-            newUser.setBuilt_in(Boolean.TRUE);
-        } else {
-            newUser.setUserRole(userRoleService.getUserRole(RoleType.CUSTOMER));
-            newUser.setBuilt_in(Boolean.FALSE);
-        }
-        return userMapper.mapUserToUserResponse( userRepository.save(newUser));
-    }
-
-    public int countAdminOrCustomer(RoleType roleType) {
-        return userRepository.countAdminOrCustomer(roleType);
+        return userMapper.mapUserToUserResponse(userRepository.save(newUser));
     }
 }
