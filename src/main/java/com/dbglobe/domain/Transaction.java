@@ -23,6 +23,7 @@ public class Transaction {
     private LocalDate date;
     private BigDecimal amount;
     private String category; // Enum Olabilir
+    @Enumerated(EnumType.STRING)
     private TransactionType type; // Deposit - Withdrawal
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -4,16 +4,14 @@ import com.dbglobe.domain.Account;
 import com.dbglobe.domain.User;
 import com.dbglobe.domain.enums.AccountType;
 import com.dbglobe.domain.enums.RoleType;
-import com.dbglobe.dto.request.UserRequest;
 import com.dbglobe.repository.AccountRepository;
 import com.dbglobe.repository.UserRepository;
-import com.dbglobe.service.UserRoleService;
-import com.dbglobe.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
 import java.math.BigDecimal;
 
 
@@ -21,9 +19,7 @@ import java.math.BigDecimal;
 @RequiredArgsConstructor
 public class ExpenseTrackerAppApplication implements CommandLineRunner {
 
-	private final UserRoleService userRoleService;
-	private final UserService userService;
-	private final UserRepository userRepository;
+    private final UserRepository userRepository;
 	private final AccountRepository accountRepository;
 	private final PasswordEncoder passwordEncoder;
 
@@ -34,7 +30,6 @@ public class ExpenseTrackerAppApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		createRolesIfRoleTableIsEmpty();
 		createAdminIfNotExist();
 		User user = createCustomerIfNotExist();
 		createAccount(user);
@@ -54,40 +49,36 @@ public class ExpenseTrackerAppApplication implements CommandLineRunner {
 	}
 
 	private User createCustomerIfNotExist(){
-		if(userService.countAdminOrCustomer(RoleType.CUSTOMER)==0){
+        if (userRepository.existsByRole(RoleType.CUSTOMER))
+            return null;
 
-			User customer  = new User();
-			customer.setUsername("Customer");
-			customer.setPassword(passwordEncoder.encode("123456"));
-			customer.setEmail("customer@customer.com");
-			customer.setName("Adem");
-			customer.setSurname("Nedim");
-			customer.setPhoneNumber("111-222-1111");
-			customer.setBuilt_in(Boolean.TRUE);
-			customer.setUserRole(userRoleService.getUserRole(RoleType.CUSTOMER));
+        var customer  = new User();
+        customer.setUsername("Customer");
+        customer.setPassword(passwordEncoder.encode("123456"));
+        customer.setEmail("customer@customer.com");
+        customer.setName("Adem");
+        customer.setSurname("Nedim");
+        customer.setPhoneNumber("111-222-1111");
+        customer.setBuilt_in(Boolean.TRUE);
+        customer.setRole(RoleType.CUSTOMER);
 
-			return userRepository.save(customer);
-		}
-		return null;
-	}
+        return userRepository.save(customer);
+    }
 
 	private void createAdminIfNotExist(){
-		if(userService.countAdminOrCustomer(RoleType.ADMIN)==0){
-			UserRequest adminRequest  = new UserRequest("Admin","Lars","Urich","111-111-1111","admin@admin.com","12345678");
-/*			adminRequest.setUsername("Admin");
-			adminRequest.setPassword("12345678");
-			adminRequest.setEmail("admin@admin.com");
-			adminRequest.setName("Lars");
-			adminRequest.setSurname("Urich");
-			adminRequest.setPhoneNumber("111-111-1111");*/
-			userService.saveUser(adminRequest);
-		}
-	}
+        if (userRepository.existsByRole(RoleType.ADMIN))
+            return;
 
-	private void createRolesIfRoleTableIsEmpty(){
-		if(userRoleService.getAllUserRole().isEmpty()){
-			userRoleService.save(RoleType.ADMIN);
-			userRoleService.save(RoleType.CUSTOMER);
-		}
-	}
+        var admin  = new User();
+        admin.setUsername("Admin");
+        admin.setPassword(passwordEncoder.encode("12345678"));
+        admin.setEmail("admin@admin.com");
+        admin.setName("Lars");
+        admin.setSurname("Urich");
+        admin.setPhoneNumber("111-111-1111");
+        admin.setBuilt_in(Boolean.TRUE);
+        admin.setRole(RoleType.ADMIN);
+
+        userRepository.save(admin);
+    }
 }

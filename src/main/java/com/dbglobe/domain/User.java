@@ -1,7 +1,9 @@
 package com.dbglobe.domain;
 
+import com.dbglobe.domain.enums.RoleType;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
+
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -36,9 +38,8 @@ public class User {
 	@Column(unique = true)
 	private String email;
 
-	@OneToOne
-	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-	private UserRole userRole; // entity.concretes.user
+	@Enumerated(EnumType.STRING)
+	private RoleType role;
 
 	private Boolean built_in ;
 

@@ -27,7 +27,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 					user.getUsername(),
 					user.getName(),
 					user.getPassword(),
-					user.getUserRole().getRoleType().name());
+					user.getRole().name());
 		}
 		throw new UsernameNotFoundException("User '" + username+ "  ' not found");
 	}

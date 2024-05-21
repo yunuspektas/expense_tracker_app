@@ -16,7 +16,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByUsername(String username);
 
-    @Query(value = "SELECT COUNT(u) FROM User u WHERE u.userRole.roleType = :roleType")
-    int countAdminOrCustomer(RoleType roleType);
+    int countByRole(RoleType roleType);
 
+    boolean existsByRole(RoleType role);
 }
